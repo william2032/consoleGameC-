@@ -26,9 +26,11 @@ int food = 0;
 
 InitializeGame();
 
+
 while (!shouldExit)
 {
     Move();
+    DisplayFood();
     if (TerminalResized()) //exit the game if the terminal is resized
     {
         Console.Clear();
@@ -44,6 +46,15 @@ bool TerminalResized()
     return height != Console.WindowHeight - 1 || width != Console.WindowWidth - 5;
 }
 
+//display food consumed and redisplay the food location
+void DisplayFood()
+{
+    if (foodX == playerX && foodY == playerY)
+    {
+        ChangePlayer();
+        ShowFood();
+    }
+} 
 
 // Displays random food at a random location
 void ShowFood()
@@ -99,15 +110,9 @@ void Move(bool invalidKey = false)
             shouldExit = true;
             break;
         default:
-        shouldExit = invalidKey;
-        break;
-
+            shouldExit = invalidKey;
+            break;
     }
-
-
-
-
-
     // Clear the characters at the previous position
     Console.SetCursorPosition(lastX, lastY);
     for (int i = 0; i < player.Length; i++)
