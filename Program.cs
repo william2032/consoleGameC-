@@ -26,19 +26,40 @@ int food = 0;
 
 InitializeGame();
 
-
 while (!shouldExit)
 {
-    Move();
-    DisplayFood();
+    //Move();
+    // DisplayFood();
+    //IfFreeze();
     if (TerminalResized()) //exit the game if the terminal is resized
     {
         Console.Clear();
         Console.WriteLine("Console was resized. Program exiting\n");
         shouldExit = true;
     }
+    else
+    {
+        if (IsPlayerFaster())
+        {
+            Move(invalidKey:false);
+        }
+        else if (IfFreeze())
+        {
+            FreezePlayer();
+        }
+        else
+        {
+            Move(invalidKey:true);
+        }
+        if (DisplayFood())
+        {
+            ChangePlayer();
+            ShowFood();
+        }
+    }
 
 }
+
 
 // Returns true if the Terminal was resized 
 bool TerminalResized()
@@ -47,14 +68,21 @@ bool TerminalResized()
 }
 
 //display food consumed and redisplay the food location
-void DisplayFood()
+bool DisplayFood()
 {
-    if (foodX == playerX && foodY == playerY)
-    {
-        ChangePlayer();
-        ShowFood();
-    }
-} 
+    return (foodX == playerX && foodY == playerY);
+}
+//returns true to freeze the player on  (X-X) state
+bool IfFreeze()
+{
+    return player.Equals(states[2]);
+
+}
+//return true to make palyer faster
+bool IsPlayerFaster()
+{
+    return player.Equals(states[1]);
+}
 
 // Displays random food at a random location
 void ShowFood()
@@ -83,11 +111,11 @@ void ChangePlayer()
 void FreezePlayer()
 {
     System.Threading.Thread.Sleep(1000);
-    player = states[0];
+    player = states[0];//0
 }
 
 // Reads directional input from the Console and moves the player
-void Move(bool invalidKey = false)
+void Move(int speed = 1, bool invalidKey = false)
 {
     int lastX = playerX;
     int lastY = playerY;
@@ -101,10 +129,10 @@ void Move(bool invalidKey = false)
             playerY++;
             break;
         case ConsoleKey.LeftArrow:
-            playerX--;
+            playerX -= speed;
             break;
         case ConsoleKey.RightArrow:
-            playerX++;
+            playerX += speed;
             break;
         case ConsoleKey.Escape:
             shouldExit = true;
@@ -127,6 +155,7 @@ void Move(bool invalidKey = false)
     // Draw the player at the new location
     Console.SetCursorPosition(playerX, playerY);
     Console.Write(player);
+
 }
 
 // Clears the console, displays the food and player
